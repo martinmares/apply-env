@@ -2,7 +2,7 @@ require "colorize"
 require "option_parser"
 
 module ApplyEnv
-  VERSION = "1.0.0"
+  VERSION = "1.1.0"
 
   class EnvMatch
     getter :orig, :name, :value, :found
@@ -20,7 +20,7 @@ module ApplyEnv
     end
 
     private def parse(orig : String)
-      match = /(\{\{\s*\.Env\.)(\w+)(\s*\}\})/ix.match(orig)
+      match = /(\{\{\s*)(\w+)(\s*\}\})/ix.match(orig)
       if match
         @name = match[2] if match[2]?
         if ENV.has_key? @name
@@ -38,10 +38,17 @@ module ApplyEnv
     @debug : Bool
     @content : String
     @env_matches : Array(EnvMatch)
+    @stdin : Bool
 
     def initialize()
       opts = parse_opts()
-      @file_name = opts[:file_name]
+      @stdin = false
+      @file_name = if opts.has_key?(:file_name)
+        opts[:file_name]
+      else
+        @stdin = true
+        ""
+      end
       @debug = if opts.has_key?(:debug)
         opts[:debug].downcase.starts_with?("true")
       else
@@ -51,13 +58,16 @@ module ApplyEnv
       @env_matches = Array(EnvMatch).new
     end
 
+    private def read_from_stdin : String
+      STDIN.gets_to_end
+    end
+
     def parse_opts : Hash(Symbol, String)
       result = Hash(Symbol, String).new
       OptionParser.parse do |parser|
         parser.banner = "Usage: apply_env [arguments]"
         parser.on("-f NAME", "--file=NAME", "Specifies template file name") { |name| result[:file_name] = name }
         parser.on("-d", "--debug", "Debug?") { result[:debug] = "true" }
-        # parser.on("-d DEBUG", "--debug=DEBUG", "Debug? [true || false]") { |debug| result[:debug] = debug }
         parser.on("-v", "--version", "App version") do
           puts "App name: apply_env"
           puts "App version: #{VERSION}"
@@ -74,33 +84,26 @@ module ApplyEnv
         end
   
       end
-      unless result.has_key?(:file_name)
-        puts "File (name must be specified!".colorize(:red)
-        exit(1)
-      end
       result
     end
 
     def find_env_matches : Array(String)
       result = Array(String).new
       if @content
-        @content.scan(/\{\{\s*\.Env\.\w+\s*\}\}/ix).each do |match|
+        @content.scan(/\{\{\s*\w+\s*\}\}/ix).each do |match|
           result << match[0] if match.size == 1
         end
       end
       result
     end
 
-    def exists?
-      File.exists? @file_name
-    end
-
     def load_content : String
-      if exists?
-        @content = File.read(@file_name)
+      if @stdin
+        @content = read_from_stdin()
       else
-        @content = ""
+        @content = File.read(@file_name) if File.exists?(@file_name)
       end
+      @content ||= ""
     end
 
     def render : String
