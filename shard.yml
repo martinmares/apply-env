@@ -1,0 +1,13 @@
+name: apply_env
+version: 0.1.0
+
+authors:
+  - Martin Mareš <mares@datalite.cz>
+
+targets:
+  apply_env:
+    main: src/apply_env.cr
+
+crystal: 1.2.2
+
+license: MIT
