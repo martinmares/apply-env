@@ -49,11 +49,7 @@ module ApplyEnv
         @stdin = true
         ""
       end
-      @debug = if opts.has_key?(:debug)
-        opts[:debug].downcase.starts_with?("true")
-      else
-        false
-      end
+      @debug = opts.has_key?(:debug)
       @content = ""
       @env_matches = Array(EnvMatch).new
     end
