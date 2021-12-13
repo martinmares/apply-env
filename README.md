@@ -14,6 +14,21 @@ TODO: Write usage instructions here
 
 TODO: Write development instructions here
 
+## Build Apline Linux static bin
+
+  * start container
+
+```bash
+$ docker run --rm -it --entrypoint /bin/sh -v $(pwd):/user/local/src/apply_env crystallang/crystal:latest-alpine
+```
+  * inside contaier run
+
+```bash
+$ cd /user/local/src/apply_env
+$ shards build --production --static
+$ strip bin/apply_env
+```
+
 ## Contributing
 
 1. Fork it (<https://github.com/your-github-user/apply_env/fork>)
