@@ -108,7 +108,7 @@ module ApplyEnv
       env_matches.each_with_index do |m, i|
         env_match = EnvMatch.new(m)
         @env_matches << env_match
-        puts "Found [#{i}], orig: \"#{m.to_s.colorize(:yellow)}\", env_var: #{env_match.value.colorize(:green)}" if @debug
+        puts "Found [#{i}], orig: \"#{m.to_s.colorize(:yellow)}\", apply with: \"#{env_match.value.colorize(:green)}\"" if @debug
       end
       new_content = @content
       @env_matches.each do |env_match|
