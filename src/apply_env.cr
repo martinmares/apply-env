@@ -41,29 +41,26 @@ module ApplyEnv
     @stdin : Bool
 
     def initialize()
-      opts = parse_opts()
-      @stdin = false
-      @file_name = if opts.has_key?(:file_name)
-        opts[:file_name]
-      else
-        @stdin = true
-        ""
-      end
-      @debug = opts.has_key?(:debug)
+      @stdin = true
+      @debug = false
+      @file_name = ""
       @content = ""
       @env_matches = Array(EnvMatch).new
+      opts = parse_opts()
     end
 
     private def read_from_stdin : String
       STDIN.gets_to_end
     end
 
-    def parse_opts : Hash(Symbol, String)
-      result = Hash(Symbol, String).new
+    def parse_opts
       OptionParser.parse do |parser|
         parser.banner = "Usage: apply_env [arguments]"
-        parser.on("-f NAME", "--file=NAME", "Specifies template file name") { |name| result[:file_name] = name }
-        parser.on("-d", "--debug", "Debug?") { result[:debug] = "true" }
+        parser.on("-f NAME", "--file=NAME", "Specifies template file name") do |_name|
+          @file_name = _name
+          @stdin = false
+        end
+        parser.on("-d", "--debug", "Debug?") { @debug = true }
         parser.on("-v", "--version", "App version") do
           puts "App name: apply_env"
           puts "App version: #{VERSION}"
@@ -80,7 +77,6 @@ module ApplyEnv
         end
   
       end
-      result
     end
 
     def find_env_matches : Array(String)
