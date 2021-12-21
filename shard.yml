@@ -2,7 +2,7 @@ name: apply_env
 version: 1.0.0
 
 authors:
-  - Martin Mareš <mares@datalite.cz>
+  - Martin Mareš <martin.mares@seznam.cz>
 
 targets:
   apply_env:
