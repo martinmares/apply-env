@@ -46,7 +46,7 @@ module ApplyEnv
       @file_name = ""
       @content = ""
       @env_matches = Array(EnvMatch).new
-      opts = parse_opts()
+      _opts = parse_opts()
     end
 
     private def read_from_stdin : String
@@ -75,7 +75,7 @@ module ApplyEnv
           STDERR.puts parser
           exit(1)
         end
-  
+
       end
     end
 
