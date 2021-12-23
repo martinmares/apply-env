@@ -1,4 +1,4 @@
-# apply_env
+# apply-env
 
 TODO: Write a description here
 
@@ -19,19 +19,19 @@ TODO: Write development instructions here
   * start container
 
 ```bash
-$ docker run --rm -it --entrypoint /bin/sh -v $(pwd):/user/local/src/apply_env crystallang/crystal:latest-alpine
+$ docker run --rm -it --entrypoint /bin/sh -v $(pwd):/user/local/src/apply-env crystallang/crystal:latest-alpine
 ```
   * inside contaier run
 
 ```bash
-$ cd /user/local/src/apply_env
+$ cd /user/local/src/apply-env
 $ shards build --production --static
-$ strip bin/apply_env
+$ strip bin/apply-env
 ```
 
 ## Contributing
 
-1. Fork it (<https://github.com/your-github-user/apply_env/fork>)
+1. Fork it (<https://github.com/your-github-user/apply-env/fork>)
 2. Create your feature branch (`git checkout -b my-new-feature`)
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)

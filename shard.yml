@@ -1,11 +1,11 @@
-name: apply_env
+name: apply-env
 version: 1.0.0
 
 authors:
   - Martin Mareš <martin.mares@seznam.cz>
 
 targets:
-  apply_env:
+  apply-env:
     main: src/apply_env.cr
 
 crystal: 1.2.2

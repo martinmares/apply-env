@@ -55,14 +55,14 @@ module ApplyEnv
 
     def parse_opts
       OptionParser.parse do |parser|
-        parser.banner = "Usage: apply_env [arguments]"
+        parser.banner = "Usage: apply-env [arguments]"
         parser.on("-f NAME", "--file=NAME", "Specifies template file name") do |_name|
           @file_name = _name
           @stdin = false
         end
         parser.on("-d", "--debug", "Debug?") { @debug = true }
         parser.on("-v", "--version", "App version") do
-          puts "App name: apply_env"
+          puts "App name: apply-env"
           puts "App version: #{VERSION}"
           exit
         end
