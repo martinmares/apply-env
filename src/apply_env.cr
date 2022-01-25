@@ -1,8 +1,10 @@
 require "colorize"
 require "option_parser"
 
+require "../src/utils"
+
 module ApplyEnv
-  VERSION = "1.1.0"
+  VERSION = "1.2.0"
 
   class EnvMatch
     getter :orig, :name, :value, :found
@@ -43,6 +45,7 @@ module ApplyEnv
     def initialize()
       @stdin = true
       @debug = false
+      @rewrite = false
       @file_name = ""
       @content = ""
       @env_matches = Array(EnvMatch).new
@@ -60,6 +63,7 @@ module ApplyEnv
           @file_name = _name
           @stdin = false
         end
+        parser.on("-w", "--rewrite", "Rewrite input file!") { @rewrite = true }
         parser.on("-d", "--debug", "Debug?") { @debug = true }
         parser.on("-v", "--version", "App version") do
           puts "App name: apply-env"
@@ -113,9 +117,22 @@ module ApplyEnv
       new_content
     end
 
+    def rewrite?(content)
+      if @rewrite && content && !content.empty?
+        rewrite_file = @file_name
+        puts "Try rewrite content:" if @debug
+        Utils.with_file(rewrite_file, "w") do |f|
+          f.puts content
+        end
+        puts " => 💾 rewrited: #{rewrite_file.to_s.colorize(:green)}" if @debug
+      else
+        puts content
+      end
+    end
+
   end
 
   template = Template.new() # "#{t1}, #{t2}"
   result = template.render()
-  puts result
+  template.rewrite?(result)
 end
