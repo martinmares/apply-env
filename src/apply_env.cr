@@ -4,7 +4,7 @@ require "option_parser"
 require "../src/utils"
 
 module ApplyEnv
-  VERSION = "1.2.0"
+  VERSION = "1.3.0"
 
   class EnvMatch
     getter :orig, :name, :value, :found
@@ -37,6 +37,7 @@ module ApplyEnv
     getter :file_name, :content, :new_content
 
     @file_name : String
+    @default : Nil | String
     @debug : Bool
     @content : String
     @env_matches : Array(EnvMatch)
@@ -46,6 +47,7 @@ module ApplyEnv
       @stdin = true
       @debug = false
       @rewrite = false
+      @default = nil
       @file_name = ""
       @content = ""
       @env_matches = Array(EnvMatch).new
@@ -64,6 +66,9 @@ module ApplyEnv
           @stdin = false
         end
         parser.on("-w", "--rewrite", "Rewrite input file!") { @rewrite = true }
+        parser.on("-n VALUE", "--if-not-found=VALUE", "Apply this 'if-not-found' value for 'env' that was not exists") do |_value|
+          @default = _value if _value
+        end
         parser.on("-d", "--debug", "Debug?") { @debug = true }
         parser.on("-v", "--version", "App version") do
           puts "App name: apply-env"
@@ -112,7 +117,11 @@ module ApplyEnv
       end
       new_content = @content
       @env_matches.each do |env_match|
-        new_content = new_content.gsub(env_match.orig, env_match.value) if env_match.found?
+        if env_match.found?
+          new_content = new_content.gsub(env_match.orig, env_match.value)
+        else
+          new_content = new_content.gsub(env_match.orig, @default) if @default
+        end
       end
       new_content
     end
