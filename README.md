@@ -20,6 +20,9 @@ TODO: Write development instructions here
 
 ```bash
 $ docker run --rm -it --entrypoint /bin/sh -v $(pwd):/user/local/src/apply-env crystallang/crystal:latest-alpine
+
+on M1 macos:
+docker-ri --rm -it --entrypoint /bin/sh -v $(pwd):/user/local/src/apply-env crystallang/crystal:latest-alpine
 ```
   * inside contaier run
 
