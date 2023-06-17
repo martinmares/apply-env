@@ -27,7 +27,7 @@ module ApplyEnv
         @name = match[2] if match[2]?
         if ENV.has_key? @name
           if @escape
-            @value = escape(ENV[@name])
+            @value = escape_special_chars(ENV[@name])
           else
             @value = ENV[@name]
           end
@@ -36,7 +36,7 @@ module ApplyEnv
       end
     end
 
-    private def escape(orig : String)
+    private def escape_special_chars(orig : String)
       return orig
       #.gsub("/", "\\/")
       .gsub("\\", "\\\\")
