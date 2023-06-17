@@ -6,3 +6,4 @@
 *.dwarf
 /.vscode/
 /.test/
+/.tmp/

@@ -13,7 +13,7 @@ module ApplyEnv
     @value : String = ""
     @found : Bool = false
 
-    def initialize(@orig : String)
+    def initialize(@orig : String, @escape : Bool)
       parse(@orig)
     end
 
@@ -26,10 +26,26 @@ module ApplyEnv
       if match
         @name = match[2] if match[2]?
         if ENV.has_key? @name
-          @value = ENV[@name]
+          if @escape
+            @value = escape(ENV[@name])
+          else
+            @value = ENV[@name]
+          end
           @found = true
         end
       end
+    end
+
+    private def escape(orig : String)
+      return orig
+      #.gsub("/", "\\/")
+      .gsub("\\", "\\\\")
+      .gsub("\"", "\\\"")
+      .gsub("\n", "\\n")
+      .gsub("\r", "\\r")
+      .gsub("\b", "\\b")
+      .gsub("\f", "\\f")
+      .gsub("\t", "\\t")
     end
   end
 
@@ -47,6 +63,7 @@ module ApplyEnv
       @stdin = true
       @debug = false
       @rewrite = false
+      @escape = false
       @default = nil
       @file_name = ""
       @content = ""
@@ -66,6 +83,7 @@ module ApplyEnv
           @stdin = false
         end
         parser.on("-w", "--rewrite", "Rewrite input file!") { @rewrite = true }
+        parser.on("-e", "--escape", "Escape special string chars (need for JSON)") { @escape = true }
         parser.on("-n VALUE", "--if-not-found=VALUE", "Apply this 'if-not-found' value for 'env' that was not exists") do |_value|
           @default = _value if _value
         end
@@ -111,7 +129,7 @@ module ApplyEnv
       @content = load_content()
       env_matches = find_env_matches()
       env_matches.each_with_index do |m, i|
-        env_match = EnvMatch.new(m)
+        env_match = EnvMatch.new(m, @escape)
         @env_matches << env_match
         puts "Found [#{i}], orig: \"#{m.to_s.colorize(:yellow)}\", apply with: \"#{env_match.value.colorize(:green)}\"" if @debug
       end
