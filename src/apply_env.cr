@@ -13,7 +13,7 @@ module ApplyEnv
     @value : String = ""
     @found : Bool = false
 
-    def initialize(@orig : String, @escape : Bool)
+    def initialize(@orig : String, @escape : Bool, @helm_only : Bool)
       parse(@orig)
     end
 
@@ -25,7 +25,10 @@ module ApplyEnv
       match = /(\{\{\s*)(\w+)(\s*\}\})/ix.match(orig)
       if match
         @name = match[2] if match[2]?
-        if ENV.has_key? @name
+        if @helm_only
+          @value = "{{`#{@orig}`}}"
+          @found = true
+        elsif ENV.has_key? @name
           if @escape
             @value = escape_special_chars(ENV[@name])
           else
@@ -37,15 +40,15 @@ module ApplyEnv
     end
 
     private def escape_special_chars(orig : String)
-      return orig
-      #.gsub("/", "\\/")
-      .gsub("\\", "\\\\")
-      .gsub("\"", "\\\"")
-      .gsub("\n", "\\n")
-      .gsub("\r", "\\r")
-      .gsub("\b", "\\b")
-      .gsub("\f", "\\f")
-      .gsub("\t", "\\t")
+      orig
+        # .gsub("/", "\\/")
+        .gsub("\\", "\\\\")
+        .gsub("\"", "\\\"")
+        .gsub("\n", "\\n")
+        .gsub("\r", "\\r")
+        .gsub("\b", "\\b")
+        .gsub("\f", "\\f")
+        .gsub("\t", "\\t")
     end
   end
 
@@ -59,10 +62,11 @@ module ApplyEnv
     @env_matches : Array(EnvMatch)
     @stdin : Bool
 
-    def initialize()
+    def initialize
       @stdin = true
       @debug = false
       @rewrite = false
+      @helm_only = false
       @escape = false
       @default = nil
       @file_name = ""
@@ -83,6 +87,7 @@ module ApplyEnv
           @stdin = false
         end
         parser.on("-w", "--rewrite", "Rewrite input file!") { @rewrite = true }
+        parser.on("-m", "--helm-only", "Make HEML template compatible!") { @helm_only = true }
         parser.on("-e", "--escape", "Escape special string chars (need for JSON)") { @escape = true }
         parser.on("-n VALUE", "--if-not-found=VALUE", "Apply this 'if-not-found' value for 'env' that was not exists") do |_value|
           @default = _value if _value
@@ -102,7 +107,6 @@ module ApplyEnv
           STDERR.puts parser
           exit(1)
         end
-
       end
     end
 
@@ -129,7 +133,7 @@ module ApplyEnv
       @content = load_content()
       env_matches = find_env_matches()
       env_matches.each_with_index do |m, i|
-        env_match = EnvMatch.new(m, @escape)
+        env_match = EnvMatch.new(m, @escape, @helm_only)
         @env_matches << env_match
         puts "Found [#{i}], orig: \"#{m.to_s.colorize(:yellow)}\", apply with: \"#{env_match.value.colorize(:green)}\"" if @debug
       end
@@ -156,10 +160,9 @@ module ApplyEnv
         puts content
       end
     end
-
   end
 
-  template = Template.new() # "#{t1}, #{t2}"
-  result = template.render()
+  template = Template.new # "#{t1}, #{t2}"
+  result = template.render
   template.rewrite?(result)
 end
