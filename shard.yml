@@ -8,6 +8,6 @@ targets:
   apply-env:
     main: src/apply_env.cr
 
-crystal: 1.8.2
+crystal: 1.15.1
 
 license: MIT
