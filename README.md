@@ -1,45 +1,14 @@
-# apply-env
+# apply-env (archived)
 
-TODO: Write a description here
+> ⚠️ **This repository is archived and no longer maintained.**
+>
+> The project has been rewritten in Rust and is now developed here:  
+> 👉 [`martinmares/apply-env-rs`](https://github.com/martinmares/apply-env-rs)
 
-## Installation
+---
 
-TODO: Write installation instructions here
+Originally this was a small Crystal CLI tool to apply ENV variables on a template  
+(“apply ENV variables on template – very small part of gomplate”).
 
-## Usage
+The last maintained version of this Crystal implementation is kept here for historical/reference purposes only.
 
-TODO: Write usage instructions here
-
-## Development
-
-TODO: Write development instructions here
-
-## Build Apline Linux static bin
-
-  * start container
-
-```bash
-$ docker run --rm -it --entrypoint /bin/sh -v $(pwd):/user/local/src/apply-env crystallang/crystal:latest-alpine
-
-on M1 macos:
-docker-ri --rm -it --entrypoint /bin/sh -v $(pwd):/user/local/src/apply-env crystallang/crystal:latest-alpine
-```
-  * inside contaier run
-
-```bash
-$ cd /user/local/src/apply-env
-$ shards build --production --static
-$ strip bin/apply-env
-```
-
-## Contributing
-
-1. Fork it (<https://github.com/your-github-user/apply-env/fork>)
-2. Create your feature branch (`git checkout -b my-new-feature`)
-3. Commit your changes (`git commit -am 'Add some feature'`)
-4. Push to the branch (`git push origin my-new-feature`)
-5. Create a new Pull Request
-
-## Contributors
-
-- [Martin Mareš](https://github.com/your-github-user) - creator and maintainer
